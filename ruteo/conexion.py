@@ -7,7 +7,7 @@ from apps.ruteo.constantes import (SSH_HOST, SSH_USERNAME, SSH_KEY_PATH,
                         DB_PORT, DB_SCHEMA, DEBUG, PROD_DATA, ABSOLUTE_PATH)
 
 
-def obtener_servicios(fecha_inicio, fecha_final=None, tipo_prod_id=14):
+def obtener_servicios(fecha_inicio, fecha_final=None, tipo_prod_list=[14]):
     """
     Obtiene datos de servicios en un rango de fechas desde la base de datos.
 
@@ -19,13 +19,14 @@ def obtener_servicios(fecha_inicio, fecha_final=None, tipo_prod_id=14):
     Returns:
         pd.DataFrame: DataFrame que contiene los resultados de la consulta.
     """
+    tipo_prod = ",".join(tipo_prod_list)
     conn = Connection(PROD_DATA)
     QUERY_FILE = 'obtain_services'
     QUERY_FILE = QUERY_FILE if not DEBUG else QUERY_FILE + '_test'
     if not fecha_final:
         fecha_final = fecha_inicio
     df_data = conn.execute_query(
-        QUERY_FILE, [fecha_inicio, fecha_final, tipo_prod_id])
+        QUERY_FILE, [fecha_inicio, fecha_final, tipo_prod])
     conn.close()
     return df_data
 

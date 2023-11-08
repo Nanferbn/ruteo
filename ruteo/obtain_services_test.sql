@@ -40,5 +40,5 @@ WHERE
 DATE(servicio."fechaServicio" AT TIME ZONE 'UTC' AT TIME ZONE 'America/Bogota') >= '{0}'
 AND DATE(servicio."fechaServicio" AT TIME ZONE 'UTC' AT TIME ZONE 'America/Bogota') <= '{1}'
 AND medio_id != 25 -- Medio de apoyo no rampa
-AND "tipoProcedimiento_id" = {2} --14 -- Dialisis
+and "tipoProcedimiento_id" in ({2})
 AND "estadoServicio_id" in (3, 4, 5, 6, 7, 8, 9, 21, 22, 23, 24)

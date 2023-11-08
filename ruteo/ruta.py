@@ -236,7 +236,7 @@ def obtener_rutas_ida(df_servicio, max_distancia_km=2):
             ruta_test = df_ruta.copy()
             count = 1
             fecha_hora_viaje = obtener_hora_salida(
-                df_ruta["HORA_SERVICIO_C"].max().time(), "2023-11-04")
+                df_ruta["HORA_SERVICIO_C"].max().time(), "2023-12-04")
             while not ruta_test.empty:
                 primer_valor = ruta_test.iloc[0]
                 origen = (primer_valor['LATITUD_ORIGEN'], primer_valor['LONGITUD_ORIGEN'])
@@ -262,9 +262,9 @@ def obtener_rutas_ida(df_servicio, max_distancia_km=2):
 
 
 def servicios_completos(
-        fecha_inicio, fecha_final, tipo_prod_id=14, tiempo_aprox=30):
+        fecha_inicio, fecha_final, tipo_prod=[14], tiempo_aprox=30):
     max_distancia_km = (1/15)*tiempo_aprox
-    df_servicios = obtener_servicios(fecha_inicio, fecha_final, tipo_prod_id)
+    df_servicios = obtener_servicios(fecha_inicio, fecha_final, tipo_prod)
     df_servicios = df_servicios[df_servicios['CIUDAD_ID_ORIGEN'] == 104].copy()
     df_rutas_ida = pd.DataFrame()
     for valor in df_servicios['FECHA_SERVICIO'].unique().tolist():

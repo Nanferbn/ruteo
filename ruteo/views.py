@@ -36,7 +36,8 @@ def consultaRutas(request):
 	if request.method=='GET':
 		if request.GET.get('action') == 'download':
 			output = BytesIO()			
-			df_rutas_ida, df_rutas_retorno = servicios_completos(fecha_inicio, fecha_fin, 14, int(tiempo))
+			df_rutas_ida, df_rutas_retorno = servicios_completos(
+				fecha_inicio, fecha_fin, [14], int(tiempo))
 			columnas_omitidas = [
 				'IDENTIFICACION_USUARIO',
 				'HORA_SERVICIO_C',

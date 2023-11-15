@@ -12,7 +12,7 @@ from apps.ruteo.calculos import (
     calcular_distancia_lineal, obtener_coordenadas_polilinea,
     filtrar_coordenadas_por_distancia)
 from apps.ruteo.tiempo import obtener_hora_salida
-from sangabriel import settings
+
 
 
 def encontrar_origen_mas_lejano(origenes, destino):
@@ -262,24 +262,34 @@ def obtener_rutas_ida(df_servicio, max_distancia_km=2):
 
 
 def servicios_completos(
-        fecha_inicio, fecha_final, tipo_prod=[14], tiempo_aprox=30):
-    max_distancia_km = (1/15)*tiempo_aprox
-    df_servicios = obtener_servicios(fecha_inicio, fecha_final, tipo_prod)
-    df_servicios = df_servicios[df_servicios['CIUDAD_ID_ORIGEN'] == 104].copy()
-    df_rutas_ida = pd.DataFrame()
-    for valor in df_servicios['FECHA_SERVICIO'].unique().tolist():
-        validator = df_servicios['FECHA_SERVICIO'] == valor
-        df_dia = df_servicios[validator].copy()
-        print(f"Calculando rutas fecha: {valor} con {df_dia.shape[0]} pasajeros")
-        df_ida, _ = obtener_rutas_ida(df_dia, max_distancia_km)
-        if not df_ida.empty:
-            df_ida['RUTA_FINAL'] = "-".join(valor.split("-")[1:]) + \
-                "_" + df_ida['RUTA_FINAL']
-            df_rutas_ida = pd.concat([df_rutas_ida, df_ida], axis=0)
-    df_retorno, _ = obtener_rutas_cercanas(df_servicios, 1)
-    df_retorno = df_retorno[df_retorno['CIUDAD_ID_ORIGEN'] == 104].copy()
-    df_ruta_ida = df_rutas_ida[
-        ['IDENTIFICACION_USUARIO', 'FECHA_SERVICIO', 'RUTA_FINAL']].copy()
-    df_rutas_retorno = df_retorno.merge(
-        df_ruta_ida, on=['IDENTIFICACION_USUARIO', 'FECHA_SERVICIO'], how='left')
+        fecha_inicio, fecha_final, tipo_prod=[14], tiempo_aprox=30,
+        by_excel=None):
+    try:
+        max_distancia_km = (1/15)*tiempo_aprox
+        if by_excel:
+            df_servicios = pd.read_csv(by_excel)
+            df_servicios.columns = [
+                col.upper() for col in df_servicios.columns]
+        else:
+            df_servicios = obtener_servicios(
+                fecha_inicio, fecha_final, tipo_prod)
+        df_rutas_ida = pd.DataFrame()
+        for valor in df_servicios['FECHA_SERVICIO'].unique().tolist():
+            validator = df_servicios['FECHA_SERVICIO'] == valor
+            df_dia = df_servicios[validator].copy()
+            print(f"Calculando rutas fecha: {valor} con {df_dia.shape[0]} pasajeros")
+            df_ida, _ = obtener_rutas_ida(df_dia, max_distancia_km)
+            if not df_ida.empty:
+                df_ida['RUTA_FINAL'] = "-".join(valor.split("-")[1:]) + \
+                    "_" + df_ida['RUTA_FINAL']
+                df_rutas_ida = pd.concat([df_rutas_ida, df_ida], axis=0)
+        df_retorno, _ = obtener_rutas_cercanas(df_servicios, 1)
+        df_ruta_ida = df_rutas_ida[
+            ['IDENTIFICACION_USUARIO', 'FECHA_SERVICIO', 'RUTA_FINAL']].copy()
+        df_rutas_retorno = df_retorno.merge(
+            df_ruta_ida, on=['IDENTIFICACION_USUARIO', 'FECHA_SERVICIO'], how='left')
+    except Exception as e:
+        print(e)
+        df_rutas_ida = pd.DataFrame()
+        df_rutas_retorno = pd.DataFrame()
     return df_rutas_ida, df_rutas_retorno

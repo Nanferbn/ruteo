@@ -19,6 +19,7 @@ def obtener_servicios(fecha_inicio, fecha_final=None, tipo_prod_list=[14]):
     Returns:
         pd.DataFrame: DataFrame que contiene los resultados de la consulta.
     """
+    tipo_prod_list = [str(tipo_prod) for tipo_prod in tipo_prod_list]
     tipo_prod = ",".join(tipo_prod_list)
     conn = Connection(PROD_DATA)
     QUERY_FILE = 'obtain_services'

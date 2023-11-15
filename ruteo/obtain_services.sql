@@ -1,4 +1,4 @@
-select
+SELECT
 servicio."observacionesOperador" OBSERVACIONES,
 estado_servicio.id ESTADO_SERVICIO,
 servicio.id SERVICIO_ID,
@@ -55,6 +55,6 @@ LEFT JOIN public.general_departamento regional_origen on ciudad_origen."Departam
 WHERE
 DATE(servicio."fechaServicio" AT TIME ZONE 'UTC' AT TIME ZONE 'America/Bogota') >= '{0}'
 AND DATE(servicio."fechaServicio" AT TIME ZONE 'UTC' AT TIME ZONE 'America/Bogota') <= '{1}'
-and medio_id != 25 -- Medio de apoyo no rampa
-and "tipoProcedimiento_id" in ({2})
-and "estadoServicio_id" in (3, 4, 5, 6, 7, 8, 9, 21, 22, 23, 24)
+AND medio_id != 25 -- Medio de apoyo no rampa
+AND "tipoProcedimiento_id" in ({2})
+AND "estadoServicio_id" in (3, 4, 5, 6, 7, 8, 9, 21, 22, 23, 24)

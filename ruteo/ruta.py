@@ -1,6 +1,7 @@
 """
     ruta.py
 """
+import traceback
 import numpy as np
 import pandas as pd
 from apps.ruteo.conexion import obtener_servicios
@@ -237,6 +238,7 @@ def obtener_rutas_ida(df_servicio, max_distancia_km=2):
             count = 1
             fecha_hora_viaje = obtener_hora_salida(
                 df_ruta["HORA_SERVICIO_C"].max().time(), "2023-12-04")
+            valor_ant = -1
             while not ruta_test.empty:
                 primer_valor = ruta_test.iloc[0]
                 origen = (primer_valor['LATITUD_ORIGEN'], primer_valor['LONGITUD_ORIGEN'])
@@ -249,10 +251,15 @@ def obtener_rutas_ida(df_servicio, max_distancia_km=2):
                 validator_index = df_ida.index.isin(ruta_test[ruta_test['SE_AGRUPA']].index)
                 df_ida.loc[validator_index, 'RUTA_FINAL'] = f"{str(primer_valor['RUTA_INICIAL'])}_{count}"
                 ruta_test = ruta_test[~ruta_test['SE_AGRUPA']].copy()
+                valor_act = (ruta_test['SE_AGRUPA'] == False).sum()
+                print(ruta_test)
                 if ruta_test.shape[0] == 1:
                     ruta_test = pd.DataFrame()
+                elif valor_act == valor_ant and valor_act == ruta_test.shape[0]:
+                    ruta_test = pd.DataFrame()
+                else:
+                    valor_ant = (ruta_test['SE_AGRUPA'] == False).sum()
                 count += 1
-
         df_ida.sort_values(by=['RUTA_INICIAL', 'RUTA_FINAL', 'DISTANCIA_LINEAL'],
                                 ascending=[True, True, False], inplace=True)
         df = df_ida.copy()
@@ -290,6 +297,7 @@ def servicios_completos(
             df_ruta_ida, on=['IDENTIFICACION_USUARIO', 'FECHA_SERVICIO'], how='left')
     except Exception as e:
         print(e)
+        traceback.print_exc()
         df_rutas_ida = pd.DataFrame()
         df_rutas_retorno = pd.DataFrame()
     return df_rutas_ida, df_rutas_retorno
